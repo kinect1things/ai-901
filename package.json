@@ -1,0 +1,53 @@
+{
+  "name": "ai-901-study-platform",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Interactive study platform & practice-exam engine for Microsoft Azure AI fundamentals (AI-900 / AI-102 aligned).",
+  "license": "MIT",
+  "homepage": "https://kinect1things.github.io/ai-901/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kinect1things/ai-901.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "validate:bank": "tsx scripts/validate-bank.ts"
+  },
+  "dependencies": {
+    "lucide-react": "^0.460.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.20.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "@vitejs/plugin-react": "^6.0.3",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "jsdom": "^25.0.1",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^8.1.0",
+    "vitest": "^4.1.9"
+  }
+}
