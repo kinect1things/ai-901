@@ -84,8 +84,8 @@ export function ConfigScreen({ onStart }: ConfigScreenProps) {
         <span className="chip mx-auto mb-3 w-fit bg-azure-100 text-azure-700 dark:bg-azure-500/15 dark:text-azure-300">
           <Sparkles className="h-3.5 w-3.5" /> Current exam · replaces AI-900 on 30 Jun 2026
         </span>
-        <h1 className="text-balance text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
-          <span className="text-azure-600 dark:text-azure-400">Azure AI Fundamentals</span>
+        <h1 className="text-balance text-4xl font-extrabold tracking-tight sm:text-5xl">
+          <span className="text-gradient">Azure AI Fundamentals</span>
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-pretty text-sm text-slate-600 sm:text-base dark:text-slate-300">
           Build a randomized, exam-style practice test from a bank of {ALL_QUESTIONS.length}+ original
@@ -321,10 +321,10 @@ function ModeCard({ icon, title, desc, active, onClick }: ModeCardProps) {
     <button
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-xl border p-4 text-left transition-all ${
+      className={`lift rounded-xl border p-4 text-left ${
         active
-          ? 'border-azure-400 bg-azure-50/70 ring-1 ring-azure-300 dark:border-azure-500 dark:bg-azure-500/10 dark:ring-azure-500/40'
-          : 'border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600'
+          ? 'border-azure-400 bg-azure-50/70 ring-1 ring-azure-300 hover:shadow-[0_10px_28px_-12px_rgba(37,99,235,0.45)] dark:border-azure-500 dark:bg-azure-500/10 dark:ring-azure-500/40'
+          : 'border-slate-200 hover:border-azure-300 hover:shadow-[0_10px_28px_-14px_rgba(37,99,235,0.3)] dark:border-slate-700 dark:hover:border-slate-600'
       }`}
     >
       <span className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
