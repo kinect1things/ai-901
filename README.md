@@ -4,7 +4,7 @@
 
 ### Interactive practice exams for **Microsoft Certified: Azure AI Fundamentals**
 
-Build randomized, exam-style practice tests from a bank of 100+ original questions across the **AI-901** (current) and **AI-900** (legacy) skills outlines — with instant rationales, Microsoft Learn links, difficulty levels, and per-domain scoring.
+Build randomized, exam-style practice tests from a bank of **160+** original questions spanning the **AI-901** (current) and **AI-900** (legacy/foundational) skills outlines — with five question formats, instant rationales, Microsoft Learn links, difficulty levels, and per-domain scoring.
 
 <!-- Status badges -->
 [![CI](https://github.com/kinect1things/ai-901/actions/workflows/ci.yml/badge.svg)](https://github.com/kinect1things/ai-901/actions/workflows/ci.yml)
@@ -44,28 +44,29 @@ Microsoft retires **AI-900** on **30 June 2026** and replaces it with **AI-901**
 | **AI-901** | Identify AI concepts and capabilities (40–45%) · Implement AI solutions by using Microsoft Foundry (55–60%) | ✅ Current |
 | **AI-900** | AI workloads & responsible AI · Machine learning · Computer vision · NLP · Generative AI | 🗄️ Legacy (great foundation) |
 
-This app makes **AI-901 the default** and keeps the full **AI-900** bank as foundational study material. Domain names and weightings mirror the official Microsoft Learn study guides.
+Every practice test draws from **both** the AI-901 and AI-900 banks as a single unified pool, so you cover the whole Azure AI Fundamentals scope in one sitting. Domain names and weightings mirror the official Microsoft Learn study guides.
 
 ## Features
 
-- 🎲 **Randomized practice exams** — pick **10 / 20 / 40** questions; AI-901-only blueprints are sampled *weighted by domain percentage* to mirror the real exam mix.
+- 🎲 **Randomized practice exams** — pick **10 / 20 / 40** questions drawn from the unified AI-901 + AI-900 pool; every attempt freshly shuffles questions and answer options, and the seeded engine lets you retake the *exact* same exam.
 - 🎚️ **One difficulty per test** — **Easy / Medium / Hard**. Difficulty comes from scenario complexity and closer distractors, never out-of-scope knowledge (these are *fundamentals* exams). The difficulty of the question you're on is hidden until you've answered.
-- 🧩 **Authentic question formats** — single-choice, multiple-response ("select two…", scored strictly), and Yes/No statement series, written in Microsoft's scenario style.
+- 🧩 **Five authentic question formats** — single-choice, multiple-response ("select two…", scored strictly), Yes/No statement series, **build-list** (arrange steps in order), and **matching** — all in Microsoft's scenario style, with accessible controls (no drag library required).
 - 📚 **Study mode vs. Exam mode** — get instant feedback per question, or answer everything and receive a scored report.
 - 🧠 **Every answer is explained** — a rationale plus a link to the relevant **Microsoft Learn** module or doc.
 - 📊 **Exam-style scoring** — results scaled to **1000** with the official **700** pass mark, plus a **per-domain performance breakdown** so you know what to study next.
+- 📤 **Share & export results** — copy a summary to the clipboard, download a structured `.json`, or print / save a clean PDF report.
 - 🧭 **Full session controls** — progress bar, timer, flagging, a question navigator, and keyboard navigation.
 - 🕘 **Local history** — recent attempts and your last setup are remembered in your browser (nothing leaves your device).
-- 🌗 **Polished, responsive UI** — dark/light themes, accessible controls, Azure-inspired design.
+- 🌗 **Polished glassmorphism UI** — dark by default with a light-theme toggle, a subtle animated background, accessible controls, and an Azure-inspired design (honors `prefers-reduced-motion`).
 
 ## Question bank
 
-100+ original questions across both exams and all domains, validated on every build:
+160+ original questions across both exams and all seven domains, validated on every build:
 
 ```
 By exam:        AI-901 · AI-900
 By difficulty:  easy · medium · hard
-By type:        single · multiple-response · statement-series
+By type:        single · multiple-response · statement-series · build-list · match
 ```
 
 Run `npm run validate:bank` to print live stats and verify integrity. Questions are **original** (no exam dumps) and reference only verified Microsoft Learn URLs.
@@ -101,11 +102,12 @@ src/
 │  ├─ exams.ts            # exam metadata + official domain blueprints
 │  ├─ references.ts       # verified Microsoft Learn links (by key)
 │  ├─ raw-types.ts        # typed authoring schema (build-time validated)
-│  └─ questions/          # the question bank, one file per exam-domain
+│  └─ questions/          # the question bank (per-domain files + formats-extra)
 ├─ lib/
-│  ├─ types.ts            # core domain model
+│  ├─ types.ts            # core domain model (5 question types)
 │  ├─ rng.ts              # seeded PRNG + weighted sampling
-│  └─ quiz.ts             # build / grade / score engine
+│  ├─ quiz.ts             # build / grade / score engine
+│  └─ share.ts            # results summary / JSON export / print
 ├─ hooks/                 # useQuizSession, useTheme
 └─ components/            # ConfigScreen, QuizScreen, QuestionView, ResultsScreen…
 scripts/validate-bank.ts  # CI question-bank validator
