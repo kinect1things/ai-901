@@ -33,17 +33,45 @@ export function filterPool(config: QuizConfig, bank: readonly Question[]): Quest
   })
 }
 
-/** Shuffle a question's choices/statements for display. */
+/** Shuffle a question's choices/statements/items/options for display. */
 export function prepareQuestion(question: Question, rng: Rng): PreparedQuestion {
-  const displayChoiceOrder =
-    question.type === 'statements'
-      ? []
-      : shuffle(question.choices.map((c) => c.id), rng)
-  const displayStatementOrder =
-    question.type === 'statements'
-      ? shuffle(question.statements.map((s) => s.id), rng)
-      : []
-  return { question, displayChoiceOrder, displayStatementOrder }
+  let displayChoiceOrder: string[] = []
+  let displayStatementOrder: string[] = []
+  let displayItemOrder: string[] = []
+  let displayOptionOrder: string[] = []
+
+  switch (question.type) {
+    case 'single':
+    case 'multi':
+      displayChoiceOrder = shuffle(
+        question.choices.map((c) => c.id),
+        rng,
+      )
+      break
+    case 'statements':
+      displayStatementOrder = shuffle(
+        question.statements.map((s) => s.id),
+        rng,
+      )
+      break
+    case 'build-list':
+      displayItemOrder = shuffle(
+        question.items.map((i) => i.id),
+        rng,
+      )
+      break
+    case 'match': {
+      displayItemOrder = shuffle(
+        question.pairs.map((p) => p.id),
+        rng,
+      )
+      const rights = [...question.pairs.map((p) => p.right), ...(question.distractors ?? [])]
+      displayOptionOrder = shuffle([...new Set(rights)], rng)
+      break
+    }
+  }
+
+  return { question, displayChoiceOrder, displayStatementOrder, displayItemOrder, displayOptionOrder }
 }
 
 /**
@@ -93,10 +121,16 @@ export function emptyResponse(): Response {
 
 /** Has the learner provided any answer to this question? */
 export function isAnswered(pq: PreparedQuestion, r: Response): boolean {
-  if (pq.question.type === 'statements') {
-    return pq.question.statements.every((s) => s.id in r.statementAnswers)
+  switch (pq.question.type) {
+    case 'statements':
+      return pq.question.statements.every((s) => s.id in r.statementAnswers)
+    case 'build-list':
+      return r.orderedIds !== undefined
+    case 'match':
+      return pq.question.pairs.every((p) => !!r.matches?.[p.id])
+    default:
+      return r.selectedChoiceIds.length > 0
   }
-  return r.selectedChoiceIds.length > 0
 }
 
 /**
@@ -118,6 +152,15 @@ export function gradeOne(pq: PreparedQuestion, r: Response): boolean {
     }
     case 'statements':
       return q.statements.every((s) => r.statementAnswers[s.id] === s.correct)
+    case 'build-list': {
+      const order = r.orderedIds ?? pq.displayItemOrder
+      return (
+        order.length === q.correctOrder.length &&
+        order.every((id, i) => id === q.correctOrder[i])
+      )
+    }
+    case 'match':
+      return q.pairs.every((p) => r.matches?.[p.id] === p.right)
   }
 }
 

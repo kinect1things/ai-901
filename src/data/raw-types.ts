@@ -51,4 +51,33 @@ export interface RawStatements extends RawBase {
   statements: RawStatement[]
 }
 
-export type RawQuestion = RawSingle | RawMulti | RawStatements
+export interface RawOrderItem {
+  id?: string
+  text: string
+}
+
+/** Authoring shape for build-list: list `items` in the CORRECT order; the
+ *  loader assigns ids and derives the correct sequence (display is shuffled). */
+export interface RawBuildList extends RawBase {
+  type: 'build-list'
+  items: RawOrderItem[]
+}
+
+export interface RawMatchPair {
+  id?: string
+  left: string
+  right: string
+}
+
+export interface RawMatch extends RawBase {
+  type: 'match'
+  pairs: RawMatchPair[]
+  distractors?: string[]
+}
+
+export type RawQuestion =
+  | RawSingle
+  | RawMulti
+  | RawStatements
+  | RawBuildList
+  | RawMatch

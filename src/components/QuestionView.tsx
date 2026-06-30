@@ -1,4 +1,4 @@
-import { BookMarked, Check, X } from 'lucide-react'
+import { ArrowRight, BookMarked, Check, ChevronDown, ChevronUp, X } from 'lucide-react'
 import { DOMAINS_BY_ID } from '../data/exams'
 import { difficultyMeta } from '../lib/format'
 import type {
@@ -72,6 +72,12 @@ export function QuestionView({ prepared, response, onChange, reveal }: QuestionV
             reveal={reveal}
           />
         )}
+        {question.type === 'build-list' && (
+          <BuildList prepared={prepared} response={response} onChange={onChange} reveal={reveal} />
+        )}
+        {question.type === 'match' && (
+          <Matching prepared={prepared} response={response} onChange={onChange} reveal={reveal} />
+        )}
       </div>
 
       {/* Rationale */}
@@ -101,7 +107,7 @@ export function QuestionView({ prepared, response, onChange, reveal }: QuestionV
 
 function orderedChoices(prepared: PreparedQuestion): Choice[] {
   const q = prepared.question
-  if (q.type === 'statements') return []
+  if (q.type !== 'single' && q.type !== 'multi') return []
   const byId = new Map(q.choices.map((c) => [c.id, c]))
   return prepared.displayChoiceOrder.map((id) => byId.get(id)!).filter(Boolean)
 }
@@ -315,6 +321,153 @@ function Statements({ prepared, response, onChange, reveal }: QuestionViewProps)
                     )
                   })}
                 </div>
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
+// ----------------------------- build list ----------------------------------
+
+function BuildList({ prepared, response, onChange, reveal }: QuestionViewProps) {
+  const q = prepared.question
+  if (q.type !== 'build-list') return null
+  const byId = new Map(q.items.map((it) => [it.id, it]))
+  const order = response.orderedIds ?? prepared.displayItemOrder
+
+  function move(index: number, dir: -1 | 1) {
+    const target = index + dir
+    if (target < 0 || target >= order.length) return
+    const next = [...order]
+    ;[next[index], next[target]] = [next[target], next[index]]
+    onChange({ ...response, orderedIds: next })
+  }
+
+  return (
+    <div>
+      <p className="mb-3 text-sm italic text-slate-500 dark:text-slate-400">
+        Arrange the items in the correct order using the arrows.
+      </p>
+      <ol className="space-y-2.5">
+        {order.map((id, i) => {
+          const item = byId.get(id)
+          if (!item) return null
+          const correctHere = reveal && q.correctOrder[i] === id
+          const wrongHere = reveal && q.correctOrder[i] !== id
+          return (
+            <li
+              key={id}
+              className={`flex items-center gap-3 rounded-xl border p-3 transition-all ${
+                correctHere
+                  ? 'border-emerald-400 bg-emerald-50 dark:border-emerald-500/50 dark:bg-emerald-500/10'
+                  : wrongHere
+                    ? 'border-rose-400 bg-rose-50 dark:border-rose-500/50 dark:bg-rose-500/10'
+                    : 'border-slate-200 dark:border-slate-700'
+              }`}
+            >
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-slate-100 text-xs font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-300">
+                {i + 1}
+              </span>
+              <span className="flex-1 text-sm text-slate-700 dark:text-slate-200">{item.text}</span>
+              {!reveal && (
+                <span className="flex shrink-0 flex-col">
+                  <button
+                    onClick={() => move(i, -1)}
+                    disabled={i === 0}
+                    aria-label="Move up"
+                    className="rounded p-0.5 text-slate-400 hover:text-azure-600 disabled:opacity-30 dark:hover:text-azure-400"
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => move(i, 1)}
+                    disabled={i === order.length - 1}
+                    aria-label="Move down"
+                    className="rounded p-0.5 text-slate-400 hover:text-azure-600 disabled:opacity-30 dark:hover:text-azure-400"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </span>
+              )}
+            </li>
+          )
+        })}
+      </ol>
+      {reveal && response.orderedIds && !q.correctOrder.every((id, i) => order[i] === id) && (
+        <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+          Correct order:{' '}
+          <span className="font-medium text-emerald-600 dark:text-emerald-400">
+            {q.correctOrder.map((id) => byId.get(id)?.text).join(' → ')}
+          </span>
+        </p>
+      )}
+    </div>
+  )
+}
+
+// ------------------------------- matching -----------------------------------
+
+function Matching({ prepared, response, onChange, reveal }: QuestionViewProps) {
+  const q = prepared.question
+  if (q.type !== 'match') return null
+  const byId = new Map(q.pairs.map((p) => [p.id, p]))
+  const matches = response.matches ?? {}
+
+  function set(pairId: string, value: string) {
+    onChange({ ...response, matches: { ...matches, [pairId]: value } })
+  }
+
+  return (
+    <div>
+      <p className="mb-3 text-sm italic text-slate-500 dark:text-slate-400">
+        Match each item on the left to the correct option.
+      </p>
+      <ul className="space-y-2.5">
+        {prepared.displayItemOrder.map((pairId) => {
+          const pair = byId.get(pairId)
+          if (!pair) return null
+          const chosen = matches[pairId] ?? ''
+          const isCorrect = reveal && chosen === pair.right
+          const isWrong = reveal && chosen !== '' && chosen !== pair.right
+          return (
+            <li
+              key={pairId}
+              className={`flex flex-col gap-2 rounded-xl border p-3 sm:flex-row sm:items-center sm:gap-3 ${
+                isCorrect
+                  ? 'border-emerald-400 bg-emerald-50 dark:border-emerald-500/50 dark:bg-emerald-500/10'
+                  : isWrong
+                    ? 'border-rose-400 bg-rose-50 dark:border-rose-500/50 dark:bg-rose-500/10'
+                    : 'border-slate-200 dark:border-slate-700'
+              }`}
+            >
+              <span className="flex-1 text-sm font-medium text-slate-700 dark:text-slate-200">
+                {pair.left}
+              </span>
+              <ArrowRight className="hidden h-4 w-4 shrink-0 text-slate-300 sm:block dark:text-slate-600" />
+              <div className="sm:w-1/2">
+                <select
+                  value={chosen}
+                  disabled={reveal}
+                  onChange={(e) => set(pairId, e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-azure-500 focus:ring-azure-500 disabled:opacity-80 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+                >
+                  <option value="" disabled>
+                    Choose…
+                  </option>
+                  {prepared.displayOptionOrder.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+                {isWrong && (
+                  <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">
+                    Correct: {pair.right}
+                  </p>
+                )}
               </div>
             </li>
           )
