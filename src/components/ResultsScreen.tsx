@@ -1,7 +1,11 @@
 import { useMemo, useState } from 'react'
 import {
+  Check,
   CircleCheck,
   CircleX,
+  Copy,
+  Download,
+  Printer,
   RotateCcw,
   Shuffle,
   Sliders,
@@ -12,6 +16,7 @@ import {
 import { QuestionView } from './QuestionView'
 import { DOMAINS_BY_ID } from '../data/exams'
 import { formatDuration, scoreColor } from '../lib/format'
+import { buildExportObject, buildSummaryText, copyText, downloadJson } from '../lib/share'
 import type { GradedQuestion, QuizResult } from '../lib/types'
 
 interface ResultsScreenProps {
@@ -23,7 +28,35 @@ interface ResultsScreenProps {
 
 export function ResultsScreen({ result, onRetakeSame, onNewSimilar, onNewQuiz }: ResultsScreenProps) {
   const [filter, setFilter] = useState<'all' | 'incorrect'>('all')
+  const [copied, setCopied] = useState(false)
   const accuracy = result.total === 0 ? 0 : result.correctCount / result.total
+
+  async function handleCopy() {
+    const ok = await copyText(buildSummaryText(result))
+    if (ok) {
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  function handleDownload() {
+    const stamp = new Date(result.completedAt).toISOString().slice(0, 10)
+    downloadJson(`azure-ai-fundamentals-result-${stamp}.json`, buildExportObject(result))
+  }
+
+  function handlePrint() {
+    // Force light theme while printing so white-on-dark text stays legible.
+    const root = document.documentElement
+    const wasDark = root.classList.contains('dark')
+    const restore = () => {
+      if (wasDark) root.classList.add('dark')
+      window.removeEventListener('afterprint', restore)
+    }
+    if (wasDark) root.classList.remove('dark')
+    window.addEventListener('afterprint', restore)
+    window.print()
+    window.setTimeout(restore, 1500)
+  }
 
   const visible = useMemo(
     () => (filter === 'incorrect' ? result.graded.filter((g) => !g.correct) : result.graded),
@@ -84,6 +117,20 @@ export function ResultsScreen({ result, onRetakeSame, onNewSimilar, onNewQuiz }:
         </div>
       </section>
 
+      {/* Share / export toolbar */}
+      <div className="flex flex-wrap items-center justify-center gap-2 print:hidden">
+        <button onClick={handleCopy} className="btn-outline gap-1.5 !py-2 text-xs">
+          {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? 'Copied!' : 'Copy summary'}
+        </button>
+        <button onClick={handleDownload} className="btn-outline gap-1.5 !py-2 text-xs">
+          <Download className="h-3.5 w-3.5" /> Download .json
+        </button>
+        <button onClick={handlePrint} className="btn-outline gap-1.5 !py-2 text-xs">
+          <Printer className="h-3.5 w-3.5" /> Print / Save PDF
+        </button>
+      </div>
+
       {/* Domain breakdown */}
       <section className="card p-5 sm:p-6">
         <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -123,7 +170,7 @@ export function ResultsScreen({ result, onRetakeSame, onNewSimilar, onNewQuiz }:
       </section>
 
       {/* Actions */}
-      <section className="grid gap-3 sm:grid-cols-3">
+      <section className="grid gap-3 sm:grid-cols-3 print:hidden">
         <button onClick={onRetakeSame} className="btn-outline py-3">
           <RotateCcw className="h-4 w-4" /> Retake this exam
         </button>
@@ -139,7 +186,7 @@ export function ResultsScreen({ result, onRetakeSame, onNewSimilar, onNewQuiz }:
       <section className="card p-5 sm:p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">Review answers</h2>
-          <div className="inline-flex rounded-lg bg-slate-100 p-0.5 text-xs font-semibold dark:bg-slate-800">
+          <div className="inline-flex rounded-lg bg-slate-100 p-0.5 text-xs font-semibold print:hidden dark:bg-slate-800">
             {(['all', 'incorrect'] as const).map((f) => (
               <button
                 key={f}

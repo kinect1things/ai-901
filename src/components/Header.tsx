@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export function Header({ theme, onToggleTheme, onHome }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/70 backdrop-blur-lg dark:border-slate-800/70 dark:bg-slate-950/70">
+    <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/70 backdrop-blur-lg print:hidden dark:border-slate-800/70 dark:bg-slate-950/70">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
         <button
           onClick={onHome}
