@@ -2,12 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { getStoredTheme, storeTheme, type Theme } from '../lib/storage'
 
 function initialTheme(): Theme {
-  const stored = getStoredTheme()
-  if (stored) return stored
-  if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: light)').matches) {
-    return 'light'
-  }
-  return 'dark'
+  // Default to dark ("black") regardless of the OS preference — the app is a
+  // dark-first experience. Only an explicit user choice (via the toggle, saved
+  // to localStorage) overrides it.
+  return getStoredTheme() ?? 'dark'
 }
 
 export function useTheme() {

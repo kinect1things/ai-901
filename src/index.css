@@ -12,7 +12,9 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-100;
+    /* Light theme is intentionally softened (slate-100, not stark white).
+       Dark is the default — see useTheme. */
+    @apply bg-slate-100 text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-100;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 
@@ -35,7 +37,7 @@
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur
+    @apply rounded-2xl border border-slate-200/80 bg-white/70 shadow-sm backdrop-blur
       dark:border-slate-800 dark:bg-slate-900/70;
   }
 
