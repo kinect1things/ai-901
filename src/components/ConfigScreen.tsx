@@ -10,7 +10,7 @@ import {
   Timer,
   Trash2,
 } from 'lucide-react'
-import { DOMAINS, EXAMS, EXAM_ORDER, domainsForExam } from '../data/exams'
+import { DOMAINS, EXAM_ORDER } from '../data/exams'
 import { ALL_QUESTIONS } from '../data/questions'
 import { filterPool } from '../lib/quiz'
 import { formatDate, formatDuration } from '../lib/format'
@@ -22,7 +22,6 @@ import {
 } from '../lib/storage'
 import type {
   Difficulty,
-  ExamCode,
   QuestionCount,
   QuizConfig,
   QuizMode,
@@ -41,9 +40,12 @@ const DIFFICULTIES: { value: Difficulty; label: string }[] = [
   { value: 'hard', label: 'Hard' },
 ]
 
+// Every practice test draws from both the AI-901 and AI-900 banks as a single
+// unified pool — there is no per-exam selection.
+const EXAMS = EXAM_ORDER
+
 export function ConfigScreen({ onStart }: ConfigScreenProps) {
   const last = useMemo(getLastConfig, [])
-  const [exams, setExams] = useState<ExamCode[]>(last?.exams ?? ['AI-901'])
   const [count, setCount] = useState<QuestionCount>(last?.count ?? 10)
   const [difficulty, setDifficulty] = useState<Difficulty>(
     last?.difficulty && last.difficulty !== 'mixed' ? last.difficulty : 'medium',
@@ -54,40 +56,22 @@ export function ConfigScreen({ onStart }: ConfigScreenProps) {
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [history, setHistory] = useState<AttemptSummary[]>(() => getHistory())
 
-  const availableDomains = useMemo(
-    () => DOMAINS.filter((d) => exams.includes(d.exam)),
-    [exams],
-  )
-
   const config: QuizConfig = useMemo(
-    () => ({ exams, domainIds, difficulty, count, mode, timed }),
-    [exams, domainIds, difficulty, count, mode, timed],
+    () => ({ exams: EXAMS, domainIds, difficulty, count, mode, timed }),
+    [domainIds, difficulty, count, mode, timed],
   )
 
-  const poolSize = useMemo(
-    () => filterPool(config, ALL_QUESTIONS).length,
-    [config],
-  )
+  const poolSize = useMemo(() => filterPool(config, ALL_QUESTIONS).length, [config])
 
   const effectiveCount = Math.min(count, poolSize)
-  const noExam = exams.length === 0
   const noDomain = domainIds !== 'all' && domainIds.length === 0
-  const canStart = !noExam && !noDomain && poolSize > 0
-
-  function toggleExam(code: ExamCode) {
-    setExams((prev) => {
-      const next = prev.includes(code) ? prev.filter((e) => e !== code) : [...prev, code]
-      return next
-    })
-    // Domain selections are exam-specific; reset to "all" when exam set changes.
-    setDomainIds('all')
-  }
+  const canStart = !noDomain && poolSize > 0
 
   function toggleDomain(id: string) {
     setDomainIds((prev) => {
-      const base = prev === 'all' ? availableDomains.map((d) => d.id) : prev
+      const base = prev === 'all' ? DOMAINS.map((d) => d.id) : prev
       const next = base.includes(id) ? base.filter((d) => d !== id) : [...base, id]
-      return next.length === availableDomains.length ? 'all' : next
+      return next.length === DOMAINS.length ? 'all' : next
     })
   }
 
@@ -101,7 +85,7 @@ export function ConfigScreen({ onStart }: ConfigScreenProps) {
           <Sparkles className="h-3.5 w-3.5" /> Current exam · replaces AI-900 on 30 Jun 2026
         </span>
         <h1 className="text-balance text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
-          Master <span className="text-azure-600 dark:text-azure-400">Azure AI Fundamentals</span>
+          <span className="text-azure-600 dark:text-azure-400">Azure AI Fundamentals</span>
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-pretty text-sm text-slate-600 sm:text-base dark:text-slate-300">
           Build a randomized, exam-style practice test from a bank of {ALL_QUESTIONS.length}+ original
@@ -112,52 +96,6 @@ export function ConfigScreen({ onStart }: ConfigScreenProps) {
 
       {/* Builder */}
       <section className="card p-5 sm:p-7">
-        {/* Exams */}
-        <fieldset>
-          <legend className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-            <GraduationCap className="h-4 w-4 text-azure-500" /> Choose your exam(s)
-          </legend>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {EXAM_ORDER.map((code) => {
-              const exam = EXAMS[code]
-              const active = exams.includes(code)
-              return (
-                <button
-                  key={code}
-                  onClick={() => toggleExam(code)}
-                  aria-pressed={active}
-                  className={`rounded-xl border p-4 text-left transition-all ${
-                    active
-                      ? 'border-azure-400 bg-azure-50/70 ring-1 ring-azure-300 dark:border-azure-500 dark:bg-azure-500/10 dark:ring-azure-500/40'
-                      : 'border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 dark:text-white">{code}</span>
-                    <span
-                      className={`chip ${
-                        exam.status === 'current'
-                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-                          : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-                      }`}
-                    >
-                      {exam.status === 'current' ? 'Current' : 'Legacy'}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{exam.tagline}</p>
-                </button>
-              )
-            })}
-          </div>
-          {noExam && (
-            <p className="mt-2 text-xs font-medium text-rose-600 dark:text-rose-400">
-              Select at least one exam.
-            </p>
-          )}
-        </fieldset>
-
-        <div className="my-6 h-px bg-slate-200 dark:bg-slate-800" />
-
         {/* Count + Difficulty */}
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
@@ -225,35 +163,25 @@ export function ConfigScreen({ onStart }: ConfigScreenProps) {
         </button>
 
         {showAdvanced && (
-          <div className="mt-2 space-y-4 rounded-xl bg-slate-50 p-4 dark:bg-slate-900/60">
-            {exams.map((code) => (
-              <div key={code}>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  {code} domains
-                </p>
-                <div className="space-y-1.5">
-                  {domainsForExam(code).map((d) => (
-                    <label
-                      key={d.id}
-                      className="flex cursor-pointer items-start gap-2.5 rounded-lg p-2 hover:bg-white dark:hover:bg-slate-800/60"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={domainSelected(d.id)}
-                        onChange={() => toggleDomain(d.id)}
-                        className="mt-0.5 h-4 w-4 rounded border-slate-300 text-azure-600 focus:ring-azure-500"
-                      />
-                      <span>
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                          {d.name}{' '}
-                          <span className="text-xs font-normal text-slate-400">({d.weight})</span>
-                        </span>
-                        <span className="block text-xs text-slate-500 dark:text-slate-400">{d.blurb}</span>
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+          <div className="mt-2 space-y-1.5 rounded-xl bg-slate-50 p-4 dark:bg-slate-900/60">
+            {DOMAINS.map((d) => (
+              <label
+                key={d.id}
+                className="flex cursor-pointer items-start gap-2.5 rounded-lg p-2 hover:bg-white dark:hover:bg-slate-800/60"
+              >
+                <input
+                  type="checkbox"
+                  checked={domainSelected(d.id)}
+                  onChange={() => toggleDomain(d.id)}
+                  className="mt-0.5 h-4 w-4 rounded border-slate-300 text-azure-600 focus:ring-azure-500"
+                />
+                <span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                    {d.name}
+                  </span>
+                  <span className="block text-xs text-slate-500 dark:text-slate-400">{d.blurb}</span>
+                </span>
+              </label>
             ))}
             {noDomain && (
               <p className="text-xs font-medium text-rose-600 dark:text-rose-400">
@@ -317,11 +245,11 @@ export function ConfigScreen({ onStart }: ConfigScreenProps) {
               <li key={h.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                 <div className="min-w-0">
                   <span className="font-medium text-slate-700 dark:text-slate-200">
-                    {h.exams.join(' + ')}
+                    {h.count}-question exam
                   </span>
                   <span className="text-slate-400">
                     {' '}
-                    · {h.count} Q · {h.difficulty} · {formatDate(h.completedAt)}
+                    · {h.difficulty} · {formatDate(h.completedAt)}
                   </span>
                 </div>
                 <span
