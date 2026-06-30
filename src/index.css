@@ -80,6 +80,22 @@
     }
   }
 
+  /* Clean, ink-friendly print output (used for "Print / Save PDF"). */
+  @media print {
+    body {
+      background: #fff !important;
+    }
+    body::before,
+    body::after {
+      display: none !important;
+    }
+    .card {
+      box-shadow: none !important;
+      border: 1px solid #e2e8f0 !important;
+      background: #fff !important;
+    }
+  }
+
   *:focus-visible {
     @apply outline-none ring-2 ring-azure-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-950;
   }

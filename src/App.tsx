@@ -80,7 +80,7 @@ export default function App() {
         )}
       </main>
 
-      <footer className="border-t border-slate-200 py-6 text-center text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+      <footer className="border-t border-slate-200 py-6 text-center text-xs text-slate-500 print:hidden dark:border-slate-800 dark:text-slate-400">
         <p>
           AI-901 Study Hub · An open-source, community practice tool. Not affiliated with or endorsed
           by Microsoft.
