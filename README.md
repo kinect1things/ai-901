@@ -21,8 +21,8 @@ Build randomized, exam-style practice tests from a bank of 100+ original questio
 [![Open issues](https://img.shields.io/github/issues/kinect1things/ai-901)](https://github.com/kinect1things/ai-901/issues)
 
 <!-- Tech badges -->
-[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Vitest](https://img.shields.io/badge/tested_with-Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev)
@@ -72,7 +72,7 @@ Run `npm run validate:bank` to print live stats and verify integrity. Questions 
 
 ## Tech stack
 
-**React 18** + **TypeScript** + **Vite** + **Tailwind CSS**, tested with **Vitest** + Testing Library, deployed to **GitHub Pages** via GitHub Actions. No backend — the site is fully static and client-side.
+**React 19** + **TypeScript** + **Vite** + **Tailwind CSS**, tested with **Vitest** + Testing Library, deployed to **GitHub Pages** via GitHub Actions. No backend — the site is fully static and client-side.
 
 ## Getting started
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // ---------------------------------------------------------------------------
 // Question-bank validator. Run with `npm run validate:bank`.
 //
