@@ -62,6 +62,21 @@ function validate(q: Question) {
     if (new Set(sids).size !== sids.length) err(q.id, 'duplicate statement ids')
     const truths = new Set(q.statements.map((s) => s.correct))
     if (truths.size < 2) warn(q.id, 'all statements share the same truth value')
+  } else if (q.type === 'build-list') {
+    if (q.items.length < 3) warn(q.id, `only ${q.items.length} items (expected >= 3)`)
+    const iids = q.items.map((i) => i.id)
+    if (new Set(iids).size !== iids.length) err(q.id, 'duplicate item ids')
+    if (q.correctOrder.length !== q.items.length) err(q.id, 'correctOrder length != items')
+    if ([...q.correctOrder].sort().join() !== [...iids].sort().join()) {
+      err(q.id, 'correctOrder is not a permutation of item ids')
+    }
+  } else if (q.type === 'match') {
+    if (q.pairs.length < 2) err(q.id, 'match must have >= 2 pairs')
+    const pids = q.pairs.map((p) => p.id)
+    if (new Set(pids).size !== pids.length) err(q.id, 'duplicate pair ids')
+    for (const p of q.pairs) {
+      if (!p.left?.trim() || !p.right?.trim()) err(q.id, 'pair has empty left/right')
+    }
   }
 }
 

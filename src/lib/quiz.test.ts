@@ -11,6 +11,8 @@ import {
 import { createRng } from './rng'
 import { ALL_QUESTIONS } from '../data/questions'
 import type {
+  BuildListQuestion,
+  MatchQuestion,
   MultipleResponseQuestion,
   QuizConfig,
   SingleChoiceQuestion,
@@ -77,6 +79,76 @@ const statements: StatementSeriesQuestion = {
     { id: 's3', text: 'true two', correct: true },
   ],
 }
+
+const buildList: BuildListQuestion = {
+  id: 't-bl',
+  exam: 'AI-901',
+  domainId: 'ai901-d2',
+  difficulty: 'medium',
+  type: 'build-list',
+  prompt: 'Arrange the steps for the scenario in the correct order.',
+  explanation: 'The correct order is a, b, c.',
+  reference: { label: 'x', url: 'https://learn.microsoft.com/x' },
+  items: [
+    { id: 'i1', text: 'a' },
+    { id: 'i2', text: 'b' },
+    { id: 'i3', text: 'c' },
+  ],
+  correctOrder: ['i1', 'i2', 'i3'],
+}
+
+const match: MatchQuestion = {
+  id: 't-match',
+  exam: 'AI-901',
+  domainId: 'ai901-d1',
+  difficulty: 'hard',
+  type: 'match',
+  prompt: 'Match each item to the correct option.',
+  explanation: 'L1->R1, L2->R2.',
+  reference: { label: 'x', url: 'https://learn.microsoft.com/x' },
+  pairs: [
+    { id: 'p1', left: 'L1', right: 'R1' },
+    { id: 'p2', left: 'L2', right: 'R2' },
+  ],
+}
+
+describe('build-list', () => {
+  it('grades the exact order', () => {
+    const pq = prepareQuestion(buildList, createRng(1))
+    expect(gradeOne(pq, { selectedChoiceIds: [], statementAnswers: {}, orderedIds: ['i1', 'i2', 'i3'] })).toBe(true)
+    expect(gradeOne(pq, { selectedChoiceIds: [], statementAnswers: {}, orderedIds: ['i2', 'i1', 'i3'] })).toBe(false)
+  })
+
+  it('is unanswered until reordered', () => {
+    const pq = prepareQuestion(buildList, createRng(1))
+    expect(isAnswered(pq, emptyResponse())).toBe(false)
+    expect(isAnswered(pq, { selectedChoiceIds: [], statementAnswers: {}, orderedIds: ['i1', 'i2', 'i3'] })).toBe(true)
+  })
+
+  it('shuffles items into the display order', () => {
+    const pq = prepareQuestion(buildList, createRng(2))
+    expect([...pq.displayItemOrder].sort()).toEqual(['i1', 'i2', 'i3'])
+  })
+})
+
+describe('match', () => {
+  it('grades all pairs strictly', () => {
+    const pq = prepareQuestion(match, createRng(1))
+    expect(gradeOne(pq, { selectedChoiceIds: [], statementAnswers: {}, matches: { p1: 'R1', p2: 'R2' } })).toBe(true)
+    expect(gradeOne(pq, { selectedChoiceIds: [], statementAnswers: {}, matches: { p1: 'R2', p2: 'R1' } })).toBe(false)
+  })
+
+  it('is answered only when every pair is set', () => {
+    const pq = prepareQuestion(match, createRng(1))
+    expect(isAnswered(pq, { selectedChoiceIds: [], statementAnswers: {}, matches: { p1: 'R1' } })).toBe(false)
+    expect(isAnswered(pq, { selectedChoiceIds: [], statementAnswers: {}, matches: { p1: 'R1', p2: 'R2' } })).toBe(true)
+  })
+
+  it('includes pair rights in the option order', () => {
+    const pq = prepareQuestion(match, createRng(3))
+    expect([...pq.displayOptionOrder].sort()).toEqual(['R1', 'R2'])
+  })
+})
 
 describe('filterPool', () => {
   it('respects exam filter', () => {

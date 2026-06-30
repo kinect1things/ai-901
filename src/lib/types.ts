@@ -19,7 +19,7 @@ export type Difficulty = 'easy' | 'medium' | 'hard'
  *  - `statements` : the Yes/No review-statement series ("For each of the
  *                   following statements, select Yes if the statement is true")
  */
-export type QuestionType = 'single' | 'multi' | 'statements'
+export type QuestionType = 'single' | 'multi' | 'statements' | 'build-list' | 'match'
 
 export interface Choice {
   /** Stable id, e.g. 'a', 'b', 'c'. Used for answer keys + shuffling. */
@@ -76,10 +76,41 @@ export interface StatementSeriesQuestion extends QuestionBase {
   statements: Statement[]
 }
 
+export interface OrderItem {
+  id: string
+  text: string
+}
+
+/** "Arrange the steps in the correct order" (build-list / ordered drag-and-drop). */
+export interface BuildListQuestion extends QuestionBase {
+  type: 'build-list'
+  items: OrderItem[]
+  /** Item ids in the correct sequence. */
+  correctOrder: string[]
+}
+
+export interface MatchPair {
+  id: string
+  /** The fixed prompt term (left side). */
+  left: string
+  /** The correct match (right side). */
+  right: string
+}
+
+/** "Match each item to the correct description" (matching drag-and-drop). */
+export interface MatchQuestion extends QuestionBase {
+  type: 'match'
+  pairs: MatchPair[]
+  /** Optional extra right-side options that match nothing (decoys). */
+  distractors?: string[]
+}
+
 export type Question =
   | SingleChoiceQuestion
   | MultipleResponseQuestion
   | StatementSeriesQuestion
+  | BuildListQuestion
+  | MatchQuestion
 
 export interface Domain {
   id: string
@@ -135,6 +166,10 @@ export interface PreparedQuestion {
   displayChoiceOrder: string[]
   /** Shuffled display order of statement ids (for statements). */
   displayStatementOrder: string[]
+  /** Shuffled initial order of item ids (build-list) or left pair ids (match). */
+  displayItemOrder: string[]
+  /** Shuffled right-side option values (match). */
+  displayOptionOrder: string[]
 }
 
 /** The learner's response to a single prepared question. */
@@ -143,6 +178,10 @@ export interface Response {
   selectedChoiceIds: string[]
   /** Map of statementId -> answered value (true = "Yes"). */
   statementAnswers: Record<string, boolean>
+  /** Current ordering of item ids (build-list); undefined until reordered. */
+  orderedIds?: string[]
+  /** Map of pairId -> chosen right-side value (match). */
+  matches?: Record<string, string>
 }
 
 export interface GradedQuestion {
