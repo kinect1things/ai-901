@@ -1,8 +1,10 @@
 name: Dependabot auto-merge
 
-# Auto-approves and enables auto-merge for Dependabot PRs. Branch protection
-# still requires the CI "Verify" gate to pass before the merge happens, so a
-# breaking update is caught by the build/tests and will not merge.
+# Enables auto-merge for Dependabot PRs. Branch protection still requires the CI
+# "Verify" + "Dependency Review" gates to pass before the merge happens, so a
+# breaking update is caught and will not merge. No approval step is used:
+# protected main requires 0 human approvals, and GitHub Actions cannot approve
+# PRs by default (that step previously failed and blocked auto-merge).
 on: pull_request_target
 
 permissions:
@@ -17,12 +19,6 @@ jobs:
       - name: Fetch Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v3
-
-      - name: Approve the PR
-        run: gh pr review --approve "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable auto-merge
         run: gh pr merge --auto --squash "$PR_URL"
