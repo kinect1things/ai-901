@@ -16,7 +16,7 @@ export function Header({ theme, onToggleTheme, onHome }: HeaderProps) {
           className="group flex items-center gap-2.5 rounded-lg text-left"
           aria-label="AI-901 Study Hub home"
         >
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-azure-500 to-sky-400 text-white shadow-sm">
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-azure-500 to-sky-400 text-white shadow-[0_4px_16px_-2px_rgba(37,99,235,0.6)] transition-transform group-hover:scale-105">
             <BrainCircuit className="h-5 w-5" />
           </span>
           <span className="leading-tight">

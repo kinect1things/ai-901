@@ -67,6 +67,12 @@
     }
   }
 
+  @keyframes shimmer {
+    to {
+      background-position: 220% center;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     body::before,
     body::after {
@@ -80,9 +86,40 @@
 }
 
 @layer components {
+  /* Frosted-glass surface: translucent, blurred, with a soft depth shadow plus
+     a faint inset top highlight for the premium glassmorphism look. */
   .card {
-    @apply rounded-2xl border border-slate-200/80 bg-white/70 shadow-sm backdrop-blur
-      dark:border-slate-800 dark:bg-slate-900/70;
+    @apply rounded-2xl border backdrop-blur-xl transition-all duration-300
+      border-slate-200/70 bg-white/65
+      shadow-[0_10px_40px_-15px_rgba(2,6,23,0.25),inset_0_1px_0_0_rgba(255,255,255,0.6)]
+      dark:border-white/10 dark:bg-slate-900/40
+      dark:shadow-[0_24px_70px_-24px_rgba(0,0,0,0.75),inset_0_1px_0_0_rgba(255,255,255,0.08)];
+  }
+
+  /* Interactive glass tiles lift and glow on hover. */
+  .lift {
+    @apply transition-all duration-200 hover:-translate-y-0.5;
+  }
+
+  /* Animated gradient text (used for the hero title). */
+  .text-gradient {
+    background-image: linear-gradient(
+      110deg,
+      theme('colors.azure.500'),
+      theme('colors.sky.400') 42%,
+      theme('colors.indigo.400') 66%,
+      theme('colors.azure.500')
+    );
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 7s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .text-gradient {
+      animation: none;
+    }
   }
 
   .btn {
@@ -91,7 +128,10 @@
   }
 
   .btn-primary {
-    @apply btn bg-azure-600 text-white shadow-sm hover:bg-azure-700 active:scale-[0.98];
+    @apply btn bg-gradient-to-br from-azure-600 to-sky-500 text-white
+      shadow-[0_8px_24px_-8px_rgba(37,99,235,0.6)]
+      hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_14px_34px_-10px_rgba(37,99,235,0.8)]
+      active:translate-y-0 active:scale-[0.98];
   }
 
   .btn-ghost {
