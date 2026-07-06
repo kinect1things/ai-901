@@ -24,7 +24,7 @@
     "validate:bank": "tsx scripts/validate-bank.ts"
   },
   "dependencies": {
-    "lucide-react": "^1.22.0",
+    "lucide-react": "^1.23.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
