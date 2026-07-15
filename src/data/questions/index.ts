@@ -22,6 +22,10 @@ import { questions as ai901d2Extra } from './ai901-d2-extra'
 import { questions as ai900ExtraA } from './ai900-extra-a'
 import { questions as ai900ExtraB } from './ai900-extra-b'
 import { questions as formatsExtra } from './formats-extra'
+import { questions as ai901d1B3 } from './ai901-d1-b3'
+import { questions as ai901d2B3 } from './ai901-d2-b3'
+import { questions as ai900d1B3 } from './ai900-d1-b3'
+import { questions as ai900MixedB3 } from './ai900-mixed-b3'
 
 export const RAW_QUESTIONS: RawQuestion[] = [
   ...ai901d1,
@@ -36,6 +40,10 @@ export const RAW_QUESTIONS: RawQuestion[] = [
   ...ai900ExtraA,
   ...ai900ExtraB,
   ...formatsExtra,
+  ...ai901d1B3,
+  ...ai901d2B3,
+  ...ai900d1B3,
+  ...ai900MixedB3,
 ]
 
 function resolve(raw: RawQuestion): Question {
