@@ -17,6 +17,10 @@ updates:
       # Tailwind v4 is a large, breaking migration; stay on the stable v3 line.
       - dependency-name: 'tailwindcss'
         update-types: ['version-update:semver-major']
+      # TypeScript majors break typescript-eslint's peer range (npm ci ERESOLVE)
+      # until the ecosystem catches up. Minor/patch updates still flow.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
     groups:
       # Batch low-risk dev tooling bumps into a single PR.
       dev-dependencies:
