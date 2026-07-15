@@ -1,7 +1,7 @@
 {
   "name": "ai-901-study-platform",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "Interactive study platform & practice-exam engine for Microsoft Azure AI fundamentals (AI-900 / AI-102 aligned).",
   "license": "MIT",
