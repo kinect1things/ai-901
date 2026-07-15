@@ -13,7 +13,7 @@ export const questions: RawQuestion[] = [
     difficulty: 'medium',
     type: 'build-list',
     prompt:
-      'You want to use a generative AI model in Microsoft Foundry and then call it from your own application. Arrange the high-level steps in the correct order.',
+      'You want to use a generative AI model in Microsoft Foundry and then call it from your own application. Following the recommended workflow of validating the model before writing any code, arrange the high-level steps in the correct order.',
     items: [
       { text: 'Browse the model catalog and select a model' },
       { text: 'Deploy the model to create an endpoint' },
@@ -32,7 +32,7 @@ export const questions: RawQuestion[] = [
     difficulty: 'hard',
     type: 'build-list',
     prompt:
-      'You are creating a single-agent solution in Microsoft Foundry. Arrange the steps in the correct order.',
+      'You are creating a single-agent solution in Microsoft Foundry and want to confirm the agent behaves correctly before writing any client code. Arrange the steps in the correct order.',
     items: [
       { text: 'Deploy a model from the catalog for the agent to use' },
       { text: 'Create an agent and give it instructions describing its goal' },
@@ -40,7 +40,7 @@ export const questions: RawQuestion[] = [
       { text: 'Build a lightweight client application that calls the agent' },
     ],
     explanation:
-      'An agent needs a deployed model and instructions before it can run. You test it in the portal, then build a client app to interact with it.',
+      'An agent needs a deployed model and instructions before it can run. Because you want to confirm behavior before coding, you test it in the portal first, then build a client app to interact with it.',
     refKey: 'agentService',
     tags: ['agents', 'agent-service'],
   },
