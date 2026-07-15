@@ -4,7 +4,7 @@
 
 ### Interactive practice exams for **Microsoft Certified: Azure AI Fundamentals**
 
-Build randomized, exam-style practice tests from a bank of **160+** original questions spanning the **AI-901** (current) and **AI-900** (legacy/foundational) skills outlines — with five question formats, instant rationales, Microsoft Learn links, difficulty levels, and per-domain scoring.
+Build randomized, exam-style practice tests from a bank of **200+** original questions spanning the **AI-901** (current) and **AI-900** (legacy/foundational) skills outlines — with five question formats, instant rationales, Microsoft Learn links, difficulty levels, and per-domain scoring.
 
 <!-- Status badges -->
 [![CI](https://github.com/kinect1things/ai-901/actions/workflows/ci.yml/badge.svg)](https://github.com/kinect1things/ai-901/actions/workflows/ci.yml)
@@ -61,7 +61,7 @@ Every practice test draws from **both** the AI-901 and AI-900 banks as a single 
 
 ## Question bank
 
-160+ original questions across both exams and all seven domains, validated on every build:
+200+ original questions across both exams and all seven domains, validated on every build:
 
 ```
 By exam:        AI-901 · AI-900
