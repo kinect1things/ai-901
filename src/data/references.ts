@@ -28,9 +28,16 @@ export const REF = {
   },
 
   // Learning-path modules (AI-901 aligned)
+  // Repointed 2026-07: the old "Get started with AI in Azure" module was
+  // repurposed by Microsoft to teach Foundry app development; this module
+  // ("Introduction to AI concepts") now carries the workload/concepts content.
   modGetStartedAI: {
-    label: 'Module: Get started with AI in Azure',
-    url: 'https://learn.microsoft.com/en-us/training/modules/get-started-with-ai-in-azure/',
+    label: 'Module: Introduction to AI concepts',
+    url: 'https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/',
+  },
+  modFundamentalsML: {
+    label: 'Module: Fundamentals of machine learning',
+    url: 'https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/',
   },
   modGenAIAgents: {
     label: 'Module: Get started with generative AI and agents in Azure',
